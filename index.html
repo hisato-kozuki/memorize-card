@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body {
+  font-family: sans-serif;
+  background: #e8f5e9;
+  text-align: center;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  margin: 20px auto;
+  width: 300px;
+  border-radius: 10px;
+}
+
+button {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+}
+
+button.secondary {
+  background: #a5d6a7;
+}
+</style>
+</head>
+
+<body>
+
+<h2>復習カード</h2>
+
+<div id="cards" style="display: flex;"></div>
+
+<button onclick="loadCards()">更新</button>
+
+<hr>
+
+<h3>カード追加</h3>
+<input id="front" placeholder="問題"><br>
+<input id="back" placeholder="答え"><br>
+<button onclick="addCard()">追加</button>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbw-tGVBSM-rkBhMcbp_HjZIxCGQ08aQ4xldvBDXI9CmDICozr3Vu0AJedJj-YrvCUbzKA/exec";
+
+async function loadCards() {
+    console.log("loadCards")
+  const res = await fetch(API_URL, {
+        headers: {
+        'Content-Type': "application/x-www-form-urlencoded",
+    }}
+);
+  const cards = await res.json();
+    console.log("cards", cards)
+
+  const container = document.getElementById("cards");
+  container.innerHTML = "";
+
+  cards.forEach(card => {
+    const div = document.createElement("div");
+    div.className = "card";
+
+    div.innerHTML = `
+      <p>${card.front}</p>
+      <button onclick="showAnswer('${card.back}', this)">答えを見る</button>
+      <div class="answer"></div>
+      <button onclick="review(${card.id}, true)">覚えた</button>
+      <button class="secondary" onclick="review(${card.id}, false)">忘れた</button>
+    `;
+
+    container.appendChild(div);
+  });
+}
+
+function showAnswer(answer, btn) {
+  btn.nextElementSibling.innerHTML = answer;
+}
+
+async function addCard() {
+  const front = document.getElementById("front").value;
+  const back = document.getElementById("back").value;
+    console.log("addCard")
+
+  await fetch(API_URL, {
+    method: "POST",
+    headers: {
+        'Content-Type': "application/x-www-form-urlencoded",
+    },
+    body: JSON.stringify({
+      type: "add",
+      front: front,
+      back: back
+    })
+  });
+
+  loadCards();
+}
+
+async function review(id, correct) {
+    console.log("review")
+  await fetch(API_URL, {
+    method: "POST",
+    headers: {
+        'Content-Type': "application/x-www-form-urlencoded",
+    },
+    body: JSON.stringify({
+      type: "review",
+      id: id,
+      correct: correct
+    })
+  });
+
+  loadCards();
+}
+
+loadCards();
+</script>
+
+</body>
+</html>
