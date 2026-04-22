@@ -117,7 +117,7 @@
           div.innerHTML = `
             <p>${card.front}</p>
             <button onclick="showAnswer('${card.back}', this)">答えを見る</button>
-            <div class="answer"></div>
+            <p class="answer"></p>
             <button onclick="review(${card.id}, true)">覚えた</button>
             <button class="secondary" onclick="review(${card.id}, false)">忘れた</button>
           `;
