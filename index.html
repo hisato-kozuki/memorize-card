@@ -15,12 +15,15 @@
 
     .card {
       position: relative;
-      background: linear-gradient(to bottom right, rgb(255, 255, 255) 0%, rgb(248, 255, 248) 50%, rgb(224, 255, 224) 100%);
+      background: linear-gradient(to bottom right, rgb(224, 255, 224) 0%, rgb(216, 255, 216) 50%, rgb(192, 255, 192) 100%);
       padding: 20px;
       margin: 20px auto;
       width: 340px;
-      box-shadow: 10px 10px 0px white inset, 10px 10px 0px green;
-      /* border: solid 10px green; */
+      box-shadow: 10px 10px 0px green;
+      border-left: solid 10px rgb(240, 255, 240);
+      border-top: solid 10px rgb(216, 255, 216);
+      border-right: solid 10px rgb(112, 208, 112);
+      border-bottom: solid 10px rgb(128, 224, 128);
       overflow: hidden;
     }
     .card::before {
@@ -48,10 +51,10 @@
       left:10px;
       top:10px;
       box-sizing: border-box;
-      border-left: solid 10px rgb(0, 192, 0);
-      border-top: solid 10px rgb(0, 192, 0);
+      border-left: solid 10px rgb(0, 144, 0);
+      border-top: solid 10px rgb(0, 176, 0);
       border-right: solid 10px white;
-      border-bottom: solid 10px white;
+      border-bottom: solid 10px rgb(240, 255, 240);
     }
     @keyframes shine {
       10% {
