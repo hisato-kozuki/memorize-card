@@ -19,12 +19,14 @@
       padding: 20px;
       margin: 20px auto;
       width: 340px;
+      min-height: 200px;
       box-shadow: 10px 10px 0px green;
       border-left: solid 10px rgb(240, 255, 240);
       border-top: solid 10px rgb(216, 255, 216);
       border-right: solid 10px rgb(112, 208, 112);
       border-bottom: solid 10px rgb(128, 224, 128);
       overflow: hidden;
+      transition: 0.2s ease;
     }
     .card::before {
       content: '';
@@ -74,10 +76,22 @@
       padding: 10px;
       margin: 5px;
       border-radius: 5px;
+      font-size: 20px;
     }
 
+    button.primary {
+      background: #4caf50;
+    }
     button.secondary {
       background: #a5d6a7;
+    }
+
+    input{
+      font-size: 20px;
+    }
+
+    .answer{
+      display: none;
     }
   </style>
   </head>
@@ -97,41 +111,80 @@
     <button onclick="addCard()">追加</button>
 
     <script>
-      const API_URL = "https://script.google.com/macros/s/AKfycbw-tGVBSM-rkBhMcbp_HjZIxCGQ08aQ4xldvBDXI9CmDICozr3Vu0AJedJj-YrvCUbzKA/exec";
+      let ok = true;
+      const API_URL = "https://script.google.com/macros/s/AKfycbziO8ym7i0xpJMKmvTAhc46wnq6wZ5RNypU7wmcMPcCum6qPlwxQAre1J96G7E1EfQMPA/exec";
 
       async function loadCards() {
         console.log("loadCards")
-        const res = await fetch(API_URL, {
-          headers: {
-            'Content-Type': "application/x-www-form-urlencoded",
-          }}
-        );
-        const cards = await res.json();
-        console.log("cards", cards)
-
+        if(ok){
+          ok = false;
+          fetch(API_URL, {
+            headers: {
+              'Content-Type': "application/x-www-form-urlencoded",
+            }}
+          ).then((res) => {
+            res.json().then(received_cards => {
+              console.log(localStorage["cards"] = JSON.stringify(received_cards));
+            });
+          });
+          setTimeout(() => {
+            ok = true;
+            fetch(API_URL, {
+              headers: {
+                'Content-Type': "application/x-www-form-urlencoded",
+              }}
+            ).then((res) => {
+              res.json().then(received_cards => {
+                console.log(localStorage["cards"] = JSON.stringify(received_cards));
+              });
+            });
+          }, 5000);
+        }
+      
         const container = document.getElementById("cards");
         container.innerHTML = "";
+        let cards = [];
+        if(localStorage["cards"]){
+          cards = JSON.parse(localStorage["cards"])
+          console.log("cards", cards)
 
-        cards.forEach(card => {
-          const div = document.createElement("div");
-          const div2 = document.createElement("div");
-          div.className = "card";
+          let i = 0;
+          for(let card of cards){
+            if(i == 6)break;
+            const div = document.createElement("div");
+            const div2 = document.createElement("div");
+            div.className = "card";
 
-          div.innerHTML = `
-            <p>${card.front}</p>
-            <button onclick="showAnswer('${card.back}', this)">答えを見る</button>
-            <p class="answer"></p>
-            <button onclick="review(${card.id}, true)">覚えた</button>
-            <button class="secondary" onclick="review(${card.id}, false)">忘れた</button>
-          `;
+              // <button onclick="showAnswer('${card.back}', this)">答えを見る</button>
+            div.innerHTML = `
+              <p>${card.front}</p>
+              <p class="answer">${card.back}</p>
+              <button onclick="review(${card.id}, true)">覚えた</button>
+              <button class="secondary" onclick="review(${card.id}, false)">忘れた</button>
+            `;
 
-          div2.appendChild(div);
-          container.appendChild(div2);
-        });
+            div.onclick = () => showAnswer(div);
+            div2.appendChild(div);
+            container.appendChild(div2);
+            i += 1;
+          };
+          localStorage["cards"] = JSON.stringify(cards.slice(i).concat(cards.slice(0, i)));
+        }
       }
 
-      function showAnswer(answer, btn) {
-        btn.nextElementSibling.innerHTML = answer;
+      function showAnswer(div) {
+        console.log(div)
+        div.style.transform = "scaleX(0%)";
+        setTimeout(() => {
+          div.style.transform = "scaleX(100%)";
+          if(div.querySelector("p").style.display != "none"){
+            div.querySelector("p").style.display = "none";
+            div.querySelector(".answer").style.display = "block";
+          } else {
+            div.querySelector("p").style.display = "block";
+            div.querySelector(".answer").style.display = "none";            
+          }
+        }, 200);
       }
 
       async function addCard() {
@@ -150,8 +203,6 @@
             back: back
           })
         });
-
-        loadCards();
       }
 
       async function review(id, correct) {
