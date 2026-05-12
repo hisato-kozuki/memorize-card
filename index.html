@@ -5,7 +5,7 @@
   <style>
     body {
       font-family: sans-serif;
-      background: #e8f5e9;
+      background: #f0f0ff;
       text-align: center;
     }
 
@@ -83,7 +83,7 @@
       background: #4caf50;
     }
     button.secondary {
-      background: #a5d6a7;
+      background: #7ab87c;
     }
 
     input{
@@ -112,7 +112,7 @@
 
     <script>
       let ok = true;
-      const API_URL = "https://script.google.com/macros/s/AKfycbziO8ym7i0xpJMKmvTAhc46wnq6wZ5RNypU7wmcMPcCum6qPlwxQAre1J96G7E1EfQMPA/exec";
+      const API_URL = "https://script.google.com/macros/s/AKfycbw0I0pbNdSanAW985-c6nypOUVS-DvIt5uJneXG5INwNIGFR5tg1TeXclzz4nELFxXAIQ/exec";
 
       async function loadCards() {
         console.log("loadCards")
@@ -163,7 +163,7 @@
               <button class="secondary" onclick="review(${card.id}, false)">忘れた</button>
             `;
 
-            div.onclick = () => showAnswer(div);
+            div.onclick = (event) => showAnswer(event, div);
             div2.appendChild(div);
             container.appendChild(div2);
             i += 1;
@@ -172,19 +172,21 @@
         }
       }
 
-      function showAnswer(div) {
-        console.log(div)
-        div.style.transform = "scaleX(0%)";
-        setTimeout(() => {
-          div.style.transform = "scaleX(100%)";
-          if(div.querySelector("p").style.display != "none"){
-            div.querySelector("p").style.display = "none";
-            div.querySelector(".answer").style.display = "block";
-          } else {
-            div.querySelector("p").style.display = "block";
-            div.querySelector(".answer").style.display = "none";            
-          }
-        }, 200);
+      function showAnswer(event, div) {
+        if(event.target.tagName == "DIV"){
+          console.log(div)
+          div.style.transform = "scaleX(0%)";
+          setTimeout(() => {
+            div.style.transform = "scaleX(100%)";
+            if(div.querySelector("p").style.display != "none"){
+              div.querySelector("p").style.display = "none";
+              div.querySelector(".answer").style.display = "block";
+            } else {
+              div.querySelector("p").style.display = "block";
+              div.querySelector(".answer").style.display = "none";            
+            }
+          }, 200);
+        }
       }
 
       async function addCard() {
